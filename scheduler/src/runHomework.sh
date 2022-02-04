@@ -1,40 +1,52 @@
 #!/bin/bash
 
-homeworkCheckersPath=/var/www/html/ap-homework/checkers/
-rezultsPath=/var/www/html/ap-homework/rezults/
+submissionCheckersPath=/home/data/checkers
+rezultsPath=/home/data/rezults
+queuePath=$1
+submissionName=$2
+maxRunTime=300
 
-homeworkType=$(echo $2 | cut -d'#' -f1)
-homeworkIdentifier=$(echo $2 | cut -d'#' -f2)
-userName=$(echo $2 | cut -d'#' -f2 | cut -d'@' -f1)
-timeStamp=$(echo $2 | cut -d'#' -f2 | cut -d'@' -f2)
+submissionType=$(echo $submissionName | cut -d'#' -f1)
+submissionIdentifier=$(echo $submissionName | cut -d'#' -f2)
+userName=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f1)
+timeStamp=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f2)
 machine=$(echo $3 | cut -f 1 -d "-")
 port=$(echo $3 | cut -f 2 -d "-")
-keyFile=student.pem
+keyFile=key.pem
+user=student
 
-mkdir $rezultsPath$homeworkType &> /dev/null
-mkdir $rezultsPath$homeworkType/$userName &> /dev/null
-mkdir $rezultsPath$homeworkType/$userName/$timeStamp &> /dev/null
+mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
 
-#upload homework
-echo "Your archive contains" > $rezultsPath$homeworkType/$userName/$timeStamp/contents.txt
-unzip -Z1 $1$2 >> $rezultsPath$homeworkType/$userName/$timeStamp/contents.txt
-echo "Your archive should contain" >> $rezultsPath$homeworkType/$userName/$timeStamp/contents.txt
-unzip -Z1 $homeworkCheckersPath$homeworkType-solution.zip >> $rezultsPath$homeworkType/$userName/$timeStamp/contents.txt
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "mkdir $2" &>> debug.txt
-scp -i $keyFile -o StrictHostKeyChecking=no -P $port $1$2 student@$machine:$2/$2 &>> debug.txt
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "unzip -o $2/$2 -d $2" &>> debug.txt
+sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -p $port $user@$machine"
+scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -P $port"
+
+debugMsg="[DEBUG] executor $machine:$port "
+
+#upload submission
+echo -n $debugMsg
+$sshCmd "mkdir $submissionName"
+echo -n $debugMsg
+$scpCmd $1$submissionName student@$machine:$submissionName/$submissionName
+echo -n $debugMsg
+$sshCmd "unzip -o $submissionName/$submissionName -d $submissionName"
 
 #upload checker
-scp -i $keyFile -o StrictHostKeyChecking=no -P $port $homeworkCheckersPath$homeworkType.zip student@$machine:$2/$homeworkType.zip &>> debug.txt
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "unzip -o $2/$homeworkType.zip -d $2" &>> debug.txt
+echo -n $debugMsg
+$scpCmd $submissionCheckersPath/$submissionType.zip student@$machine:$submissionName/$submissionType.zip
+echo -n $debugMsg
+$sshCmd "unzip -o $submissionName/$submissionType.zip -d $submissionName"
 
 #run
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "cd $2; chmod 777 runAll.sh" &>> debug.txt
-timeout 300 ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "cd $2; ./runAll.sh" &>> $rezultsPath$homeworkType/$userName/$timeStamp/rezult.txt
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "killall -9 runAll.sh" &>> debug.txt
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "killall -9 mpirun" &>> debug.txt
+echo -n $debugMsg
+$sshCmd "cd $submissionName; chmod 777 runAll.sh"
+timeout $maxRunTime $sshCmd "cd $submissionName; ./runAll.sh" &>> $rezultsPath/$submissionType/$userName/$timeStamp/rezult.txt
+echo -n $debugMsg
+$sshCmd "killall -9 runAll.sh"
+echo -n $debugMsg
+$sshCmd "killall -9 mpirun"
 
 #cleanup
-ssh -i $keyFile -o StrictHostKeyChecking=no -p $port student@$machine "rm -R $2" &>> debug.txt
+echo -n $debugMsg
+$sshCmd "rm -R $submissionName"
 
-mv $1$2 $rezultsPath$homeworkType/$userName/$timeStamp/$2
+mv $queuePath/$machine/$submissionName $rezultsPath/$submissionType/$userName/$timeStamp/$submissionName
