@@ -17,7 +17,7 @@ while true; do
 			echo $file;
 			mv $uploadPath/$file $queuePath/$machine
 			echo $machine $queuePath/$machine $file &
-			./runHomework.sh $queuePath $file $machine &
+			bash ./runHomework.sh $queuePath $file $machine &
 			break;
 		done;
 	done;
