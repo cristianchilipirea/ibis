@@ -3,9 +3,8 @@
 # have to be logged in as cristian (user that has acess to key for ssh to apd)
 # nohup ./moveToBufferDaemon.sh > logMovetoBuffer.txt &
 
-uploadPath=/home/data/uploads
-queuePath=/home/data/buffer
-queueSize=10
+uploadPath=data/uploads
+queuePath=data/buffer
 
 while true; do
 	for file in $(ls -tr $uploadPath/); do
@@ -14,7 +13,6 @@ while true; do
 			if [ $numRunning -ge 1 ]; then
 				continue;
 			fi
-			echo $file;
 			mv $uploadPath/$file $queuePath/$machine
 			echo $machine $queuePath/$machine $file &
 			bash ./runHomework.sh $queuePath $file $machine &
@@ -25,4 +23,3 @@ while true; do
 	sleep 3
 	date
 done
-

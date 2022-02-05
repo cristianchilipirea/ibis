@@ -1,52 +1,51 @@
 #!/bin/bash
 
-submissionCheckersPath=/home/data/checkers
-rezultsPath=/home/data/rezults
+maxRunTime=300
+submissionCheckersPath=data/checkers
+rezultsPath=data/rezults
+ssh_user=worker
+keyFile=keys/ssh-privatekey
+
 queuePath=$1
 submissionName=$2
-maxRunTime=300
+fullMachineName=$3
 
 submissionType=$(echo $submissionName | cut -d'#' -f1)
 submissionIdentifier=$(echo $submissionName | cut -d'#' -f2)
 userName=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f1)
 timeStamp=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f2)
-machine=$(echo $3 | cut -f 1 -d "-")
-port=$(echo $3 | cut -f 2 -d "-")
-keyFile=/home/keys/ssh-privatekey
-ssh_user=worker
+machine=$(echo $fullMachineName | cut -f 1 -d "-")
+port=$(echo $fullMachineName | cut -f 2 -d "-")
 
-mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
-
+fullSubmissionPath="$queuePath/$fullMachineName/$submissionName"
+fileDebug="$rezultsPath/$submissionType/$userName/$timeStamp/debug.txt"
 sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -p $port $ssh_user@$machine"
 scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -P $port"
 
-debugMsg="[DEBUG] executor $machine:$port "
+mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
+echo "" > $fileDebug
+
+echo "Running on $machine:$port" >> $fileDebug 2>&1
 
 #upload submission
-echo -n $debugMsg
-$sshCmd "mkdir $submissionName"
-echo -n $debugMsg
-$scpCmd $1$submissionName $ssh_user@$machine:$submissionName/$submissionName
-echo -n $debugMsg
-$sshCmd "unzip -o $submissionName/$submissionName -d $submissionName"
+$sshCmd "mkdir $submissionName" >> $fileDebug 2>&1
+$scpCmd $fullSubmissionPath $ssh_user@$machine:$submissionName/$submissionName >> $fileDebug 2>&1
+$sshCmd "unzip -o $submissionName/$submissionName -d $submissionName" >> $fileDebug 2>&1
 
 #upload checker
-echo -n $debugMsg
-$scpCmd $submissionCheckersPath/$submissionType.zip $ssh_user@$machine:$submissionName/$submissionType.zip
-echo -n $debugMsg
-$sshCmd "unzip -o $submissionName/$submissionType.zip -d $submissionName"
+$scpCmd $submissionCheckersPath/$submissionType.zip $ssh_user@$machine:$submissionName/$submissionType.zip >> $fileDebug 2>&1
+$sshCmd "unzip -o $submissionName/$submissionType.zip -d $submissionName" >> $fileDebug 2>&1
 
 #run
-echo -n $debugMsg
-$sshCmd "cd $submissionName; chmod 777 runAll.sh"
-timeout $maxRunTime $sshCmd "cd $submissionName; ./runAll.sh" &>> $rezultsPath/$submissionType/$userName/$timeStamp/rezult.txt
-echo -n $debugMsg
-$sshCmd "killall -9 runAll.sh"
-echo -n $debugMsg
-$sshCmd "killall -9 mpirun"
+$sshCmd "cd $submissionName; chmod 777 runAll.sh" >> $fileDebug 2>&1
+fileRezults="$rezultsPath/$submissionType/$userName/$timeStamp/rezult.txt"
+echo "" > $fileRezults
+timeout $maxRunTime $sshCmd "cd $submissionName; ./runAll.sh" &> $fileRezults
 
 #cleanup
-echo -n $debugMsg
-$sshCmd "rm -R $submissionName"
+$sshCmd "killall -9 runAll.sh" >> $fileDebug 2>&1
+$sshCmd "killall -9 mpirun" >> $fileDebug 2>&1
+$sshCmd "rm -R $submissionName" >> $fileDebug 2>&1
 
-mv $queuePath/$machine/$submissionName $rezultsPath/$submissionType/$userName/$timeStamp/$submissionName
+fullLongTermStoragePath="$rezultsPath/$submissionType/$userName/$timeStamp/$submissionName"
+mv $fullSubmissionPath $fullLongTermStoragePath
