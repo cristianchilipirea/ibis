@@ -13,11 +13,11 @@ timeStamp=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f2)
 machine=$(echo $3 | cut -f 1 -d "-")
 port=$(echo $3 | cut -f 2 -d "-")
 keyFile=/home/keys/ssh-privatekey
-user=student
+ssh_user=worker
 
 mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
 
-sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -p $port $user@$machine"
+sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -p $port $ssh_user@$machine"
 scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -P $port"
 
 debugMsg="[DEBUG] executor $machine:$port "
@@ -26,13 +26,13 @@ debugMsg="[DEBUG] executor $machine:$port "
 echo -n $debugMsg
 $sshCmd "mkdir $submissionName"
 echo -n $debugMsg
-$scpCmd $1$submissionName student@$machine:$submissionName/$submissionName
+$scpCmd $1$submissionName $ssh_user@$machine:$submissionName/$submissionName
 echo -n $debugMsg
 $sshCmd "unzip -o $submissionName/$submissionName -d $submissionName"
 
 #upload checker
 echo -n $debugMsg
-$scpCmd $submissionCheckersPath/$submissionType.zip student@$machine:$submissionName/$submissionType.zip
+$scpCmd $submissionCheckersPath/$submissionType.zip $ssh_user@$machine:$submissionName/$submissionType.zip
 echo -n $debugMsg
 $sshCmd "unzip -o $submissionName/$submissionType.zip -d $submissionName"
 
