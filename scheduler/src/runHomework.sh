@@ -12,7 +12,7 @@ userName=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f1)
 timeStamp=$(echo $submissionName | cut -d'#' -f2 | cut -d'@' -f2)
 machine=$(echo $3 | cut -f 1 -d "-")
 port=$(echo $3 | cut -f 2 -d "-")
-keyFile=key.pem
+keyFile=/home/keys/ssh-privatekey
 user=student
 
 mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
