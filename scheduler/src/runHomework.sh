@@ -19,8 +19,8 @@ port=$(echo $fullMachineName | cut -f 2 -d "-")
 
 fullSubmissionPath="$queuePath/$fullMachineName/$submissionName"
 fileDebug="$rezultsPath/$submissionType/$userName/$timeStamp/debug.txt"
-sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -p $port $ssh_user@$machine"
-scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -P $port"
+sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p $port $ssh_user@$machine"
+scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P $port"
 
 mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
 echo "" > $fileDebug
