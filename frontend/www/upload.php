@@ -24,7 +24,7 @@ function getHomeworkType($username, $time) {
 	exit();
 }
 
-$target_dir = "uploads/";
+$target_dir = "data/uploads/";
 $homeworkType = $_POST['task'];
 $target_file = $target_dir.$homeworkType."#".$_POST['username']."@".date('U')."#.zip";
 $uploadOk = 1;
