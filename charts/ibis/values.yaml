@@ -1,7 +1,6 @@
-
 mountPath: "/var/www/html/data"
 volumePath: "/root/Dropbox/volumes/ibis"
-nodeName: "nyx"
+nodeName: "localhost"
 schedulerVolumeSubpath: ""
 ibisSchedulerImage: cristianchilipirea/ibis-scheduler
 isdev: false
