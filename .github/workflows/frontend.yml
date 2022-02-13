@@ -10,6 +10,12 @@ jobs:
     docker:
         runs-on: ubuntu-latest
         steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Copy authorization code
+              run: wget -O frontend/www/authorization.php https://raw.githubusercontent.com/cristianchilipirea/aa/main/www/authorization.php
+
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v1
 
@@ -21,9 +27,6 @@ jobs:
               with:
                   username: ${{ secrets.DOCKERHUB_USERNAME }}
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-            - name: Copy authorization code
-              run: wget -O frontend/www/authorization.php https://raw.githubusercontent.com/cristianchilipirea/aa/main/www/authorization.php
 
             - name: Build and push
               id: docker_build
