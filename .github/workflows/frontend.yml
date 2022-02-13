@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Copy authorization code
-              run: wget -O frontend/www/authorization.php https://raw.githubusercontent.com/cristianchilipirea/aa/main/authorization.php
+              run: wget -O frontend/www/authorization.php https://raw.githubusercontent.com/cristianchilipirea/aa/main/www/authorization.php
 
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v1
