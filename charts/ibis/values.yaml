@@ -1,0 +1,10 @@
+
+mountPath: "/var/www/html/data"
+volumePath: "/root/Dropbox/volumes/ibis"
+nodeName: "nyx"
+schedulerVolumeSubpath: ""
+ibisSchedulerImage: cristianchilipirea/ibis-scheduler
+isdev: false
+salt: IBIS_SALT
+passwd: IBIS_PASSWD
+sshKey: SSH_KEY

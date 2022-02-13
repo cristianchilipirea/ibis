@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    labels:
+        app: ibis-scheduler
+    name: ibis-scheduler
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: ibis-scheduler
+    template:
+        metadata:
+            labels:
+                app: ibis-scheduler
+        spec:
+            volumes:
+                - name: ibis-scheduler-secret
+                  secret:
+                      secretName: ibis-scheduler-secret
+                      defaultMode: 0400
+                - name: ibis-scheduler
+                  persistentVolumeClaim:
+                      claimName: ibis
+            containers:
+                - image: {{ .Values.ibisSchedulerImage }}
+                  imagePullPolicy: Always
+                  name: ibis-scheduler
+                  volumeMounts:
+                      - name: ibis-scheduler
+                        mountPath: "/home/data"
+                        subPath: {{ .Values.schedulerVolumeSubpath }}
+                      - name: ibis-scheduler-secret
+                        mountPath: "/home/keys"
+                        readOnly: true
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always

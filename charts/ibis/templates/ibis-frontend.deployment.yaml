@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    labels:
+        app: ibis-fe
+    name: ibis-fe
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: ibis-fe
+    template:
+        metadata:
+            labels:
+                app: ibis-fe
+        spec:
+            volumes:
+                - name: ibis-fe-secret
+                  secret:
+                      secretName: ibis-fe-secret
+                      defaultMode: 0444
+                - name: ibis-fe
+                  persistentVolumeClaim:
+                      claimName: ibis
+                {{ if .Values.isdev }}
+                - name: ibis-frontend-cm
+                  configMap:
+                      name: ibis-frontend-cm
+                {{ end }}
+            containers:
+                - image: cristianchilipirea/ibis-frontend
+                  imagePullPolicy: Always
+                  name: ibis-fe
+                  volumeMounts:
+                      - name: ibis-fe
+                        mountPath: {{ .Values.mountPath }}
+                      - name: ibis-fe-secret
+                        mountPath: "/var/www/html/secrets"
+                        readOnly: true
+                      {{ if .Values.isdev }}
+                      - name: ibis-frontend-cm
+                        mountPath: "/usr/local/etc/php/php.ini"
+                        readOnly: true
+                        subPath: "php.ini"
+                      {{ end }}
+                  ports:
+                      - containerPort: 80
+            dnsPolicy: ClusterFirst
+            restartPolicy: Always

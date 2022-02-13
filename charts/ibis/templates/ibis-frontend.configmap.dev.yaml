@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ibis-frontend-cm
+data:
+  php.ini: |-
+{{ .Files.Get "conf/php.ini" | indent 4 }}
