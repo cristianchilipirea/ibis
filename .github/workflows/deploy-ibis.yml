@@ -1,0 +1,23 @@
+name: Deploy Ibis
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: (Re)start ibis
+        run: |
+          export IBIS_SALT=${{ secrets.IBIS_SALT }}
+          export IBIS_PASSWD=${{ secrets.IBIS_PASSWD }}
+          export WORKER_SSH_KEY=${{ secrets.WORKER_SSH_KEY }}
+          cp charts/ibis/values.yaml charts/ibis/values.yaml/tmp
+          cat charts/ibis/values.yaml/tmp | expsubst > charts/ibis/values.yaml
+          echo ${{ secrets.CHILIPIREARO_SSH_KEY }} | base64 -d > key
+          chmod 400 key
+          ssh -i key -o StrictHostKeyChecking=no root@chilipirea.ro rm -rf charts
+          scp -i key -o StrictHostKeyChecking=no charts root@chilipirea.ro:.
+          ssh -i key -o StrictHostKeyChecking=no root@chilipirea.ro microk8s helm3 uninstall ibis
+          ssh -i key -o StrictHostKeyChecking=no root@chilipirea.ro microk8s helm3 install ibis ./charts/ibis

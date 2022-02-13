@@ -5,6 +5,6 @@ nodeName: "nyx"
 schedulerVolumeSubpath: ""
 ibisSchedulerImage: cristianchilipirea/ibis-scheduler
 isdev: false
-salt: IBIS_SALT
-passwd: IBIS_PASSWD
-sshKey: SSH_KEY
+salt: $IBIS_SALT
+passwd: $IBIS_PASSWD
+sshKey: $WORKER_SSH_KEY
