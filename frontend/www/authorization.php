@@ -1,8 +1,17 @@
 <?php
-function hasAccess($key, $timestamp, $username) {
-	//echo $key." ".$timestamp." ".$username." ".time()." ".($timestamp + 3600);
-	if($timestamp + 2*3600 < time())
-		return false;
-	return (strcmp($key, md5($username."PRIVATE_KEY".$timestamp)) == 0);
+function isAuthenticated()
+{
+	return true;
 }
-?>
+function printAuthForm()
+{
+	return true;
+}
+function printLogOut()
+{
+	return true;
+}
+function isAdmin()
+{
+	return true;
+}
