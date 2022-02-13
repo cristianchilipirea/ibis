@@ -13,8 +13,8 @@ jobs:
           export IBIS_SALT=${{ secrets.IBIS_SALT }}
           export IBIS_PASSWD=${{ secrets.IBIS_PASSWD }}
           export WORKER_SSH_KEY=${{ secrets.WORKER_SSH_KEY }}
-          cp charts/ibis/values.yaml charts/ibis/values.yaml/tmp
-          cat charts/ibis/values.yaml/tmp | expsubst > charts/ibis/values.yaml
+          cp charts/ibis/values.yaml charts/ibis/values.yaml.tmp
+          cat charts/ibis/values.yaml.tmp | envsubst > charts/ibis/values.yaml
           echo ${{ secrets.CHILIPIREARO_SSH_KEY }} | base64 -d > key
           chmod 400 key
           ssh -i key -o StrictHostKeyChecking=no root@chilipirea.ro rm -rf charts
