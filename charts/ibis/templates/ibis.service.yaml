@@ -15,6 +15,6 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: ibis
+    app: ibis-fe
   sessionAffinity: None
   type: ClusterIP
