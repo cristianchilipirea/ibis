@@ -7,7 +7,7 @@ if (!isset($_GET["keyType"]) || ($_GET["keyType"] != "key" && $_GET["keyType"] !
 
 if (!isAuthenticated())
 	exit("No access. Please login.");
-if (file_exists("data/keys/" . $_GET["username"] . "." . $_GET["keyType"]))
+if (!file_exists("data/keys/" . $_GET["username"] . "." . $_GET["keyType"]))
 	exit("Key not found for user " . $_GET["username"] . ".");
 
 readfile("data/keys/" . $_GET["username"] . "." . $_GET["keyType"]);
