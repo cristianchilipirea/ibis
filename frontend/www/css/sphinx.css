@@ -1,0 +1,68 @@
+body {
+	background-color: #eee;
+}
+
+#main {
+}
+.progress {
+	height: 10vh;
+	font-size: 7vh;
+}
+
+.answer {
+	height: 7.5vh;
+	line-height: 7.5vh;
+	font-size: 5vh;
+}
+
+#controller {
+	height: 10vh;
+	line-height: 10vh;
+	font-size: 7vh;
+	text-align: center;
+}
+
+#question {
+	height: 10vh;
+	width: 100%;
+	text-align: center;	
+}
+
+#all {
+	position: relative;
+	height: 95%;
+	width: 95%;
+	top: 2.5%;
+	bottom: 2.5%;
+	left: 2.5%;
+	right: 2.5%;
+}
+
+.btn-ans {
+	height: 16.5vh;
+	line-height: 14vh;
+	margin-top: 1vh;
+}
+
+#head {
+	height: 20vh;
+	width: 100%;
+	text-align: center;
+}
+
+#nextQuestion {
+	margin-top: 33vh; 
+	height: 33vh;
+	margin-left: 10%; 
+	width: 80%;
+}
+
+#nextQuestionText {
+	height: 33vh;
+	width: 100%;
+	text-align: center;
+}
+
+#main {
+	visibility: hidden;
+}

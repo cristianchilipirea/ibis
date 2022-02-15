@@ -26,6 +26,21 @@ Deny from all
 	Allow from all
 </Files>
 
+<Files sphinx-admin.php>
+	Order Allow,Deny
+	Allow from all
+</Files>
+
+<Files sphinx-viewAnswer.php>
+	Order Allow,Deny
+	Allow from all
+</Files>
+
+<Files sphinx-viewQuestion.php>
+	Order Allow,Deny
+	Allow from all
+</Files>
+
 <FilesMatch ".*\.(css|js|ico)$">
 	Order Allow,Deny
 	Allow from all
