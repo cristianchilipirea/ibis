@@ -1,5 +1,15 @@
 <?php
 include 'authorization.php';
+if(!isAuthenticated())
+	exit("You need to be logged in! If using the wiki you may need to do a force refresh (Ctrl+F5)");
+if(!isset($_GET['task']))
+	exit("You need to add task to GET request");
+
+function getTimestamp() {
+	if(isset($_GET['timestamp']))
+		return $_GET['timestamp'];
+	return time();
+}
 ?>
 <html>
 
@@ -19,10 +29,7 @@ include 'authorization.php';
 		<br>
 		You may need to refresh to see results.
 		<div style="display: flex;">
-			<form id="submissionForm" class="form-inline" action="upload.php" method="post" enctype="multipart/form-data">
-				<input type="hidden" name="username" value="<?php echo $_GET['username']; ?>">
-				<input type="hidden" name="key" value="<?php echo $_GET['key']; ?>">
-				<input type="hidden" name="timestamp" value="<?php echo $_GET['timestamp']; ?>">
+			<form id="submissionForm" class="form-inline" action="upload.php?key=<?php echo $_GET['key']; ?>&username=<?php echo getUsername(); ?>&timestamp=<?php echo $_GET['timestamp']; ?>" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="task" value="<?php echo $_GET['task']; ?>">
 
 				<div class="form-group">

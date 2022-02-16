@@ -14,58 +14,36 @@ function getHomeworkType($username, $time) {
 			return $homeworkType["name"];
 		}
 	}
-	echo "You are outside submission time";
-	exit();
+	exit("You are outside submission time");
 }
 
 $target_dir = "data/uploads/";
 $homeworkType = $_POST['task'];
-$target_file = $target_dir.$homeworkType."#".$_POST['username']."@".date('U')."#.zip";
-$uploadOk = 1;
-$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+$username = getUsername();
+$target_file = $target_dir.$homeworkType."#".$username."@".date('U')."#.zip";
+
 
 $uploads_files = scandir($target_dir);
 foreach($uploads_files as $upload_file) {
-	if(strpos($upload_file,  $_POST['username'])!==FALSE) {
-		echo "ERROR You already have a submission in the waiting queue";
-		exit();
-	}
+	if(strpos($upload_file, $username)!==FALSE)
+		exit("ERROR You already have a submission in the waiting queue");
 }
 
-// Check if image file is a actual image or fake image
-if(isset($_POST["submit"])) {
-    $uploadOk = 1;
-}
-// Check if file already exists
-if (file_exists($target_file)) {
-    echo "Sorry, file already exists.";
-    $uploadOk = 0;
-	exit();
-}
-// Check file size
-if ($_FILES["fileToUpload"]["size"] > 500000) {
-    echo "Sorry, your file is too large.";
-    $uploadOk = 0;
-	exit();
-}
-// Allow certain file formats
-if($imageFileType != "zip") {
-    echo "Sorry, only ZIP files are allowed.";
-    $uploadOk = 0;
-	exit();
-}
-// Check if $uploadOk is set to 0 by an error
-if ($uploadOk == 0) {
-    echo "Sorry, your file was not uploaded.";
-	exit();
-} else {
-	echo($_FILES["fileToUpload"]["tmp_name"]);
-    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-        echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
-    } else {
-        echo "Sorry, there was an error uploading your file.";
-		exit();
-    }
-}
-header('Location: main.php?task='.$_POST['task'].'&username='.$_POST['username'].'&key='.$_POST['key'].'&timestamp='.$_POST['timestamp']);
+if (file_exists($target_file))
+	exit("Sorry, file already exists.");
+
+if ($_FILES["fileToUpload"]["size"] > 500000)
+	exit("Sorry, your file is too large.");
+
+$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+if($imageFileType != "zip") 
+	exit("Sorry, only ZIP files are allowed.");
+
+
+if (!move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
+	exit("Sorry, there was an error uploading your file.");
+
+$urlpath = 'main.php?task='.$homeworkType.'&username='.$username.'&key='.$_GET['key'].'&timestamp='.$_GET['timestamp'];
+header('Location: '.$urlpath);
+echo "Go to: https://ibis.chilipirea.ro/".$urlpath;
 ?>

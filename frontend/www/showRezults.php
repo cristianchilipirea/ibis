@@ -1,5 +1,11 @@
 <?php
 
+$username = getUsername();
+if(!isset($_GET['task']))
+	exit("You need to add task to GET request");
+$homeworkType = $_GET['task'];
+
+
 function getTimeFromFile($fileName)
 {
 	$parts = explode('#', $fileName);
@@ -21,7 +27,7 @@ function getIdFromTime($time)
 $uploadedFiles = scandir("data/uploads");
 $uploadedFiles = array_diff($uploadedFiles, [".", ".."]);
 foreach ($uploadedFiles as $uploadedFile) {
-	if (strpos($uploadedFile, $_GET['username']) === FALSE)
+	if (strpos($uploadedFile, $username) === FALSE)
 		continue;
 	echo "<div class=\"alert alert-success\" role=\"alert\">Submission " . getIdFromTime(getTimeFromFile($uploadedFile)) . " is <strong>";
 	$count = 0;
@@ -35,16 +41,16 @@ foreach ($uploadedFiles as $uploadedFile) {
 $bufferedFiles = scandir("data/buffer");
 $submissionsRunning = array();
 foreach ($bufferedFiles as $bufferedFile) {
-	if (strpos($bufferedFile, $_GET['username']) !== FALSE) {
+	if (strpos($bufferedFile, $username) !== FALSE) {
 		array_push($submissionsRunning, getTimeFromFile($bufferedFile));
 	}
 }
 
 $i = 0;
-$homeworkType = $_GET['task'];
-if (!is_dir("data/rezults/" . $homeworkType . "/" . $_GET['username']))
-	return;
-$homeworkDirs = scandir("data/rezults/" . $homeworkType . "/" . $_GET['username'], SCANDIR_SORT_DESCENDING);
+
+if (!is_dir("data/rezults/" . $homeworkType . "/" . $username))
+	exit();
+$homeworkDirs = scandir("data/rezults/" . $homeworkType . "/" . $username, SCANDIR_SORT_DESCENDING);
 $homeworkDirs = array_diff($homeworkDirs, [".", ".."]);
 foreach ($homeworkDirs as $homeworkDir) {
 ?>
@@ -62,10 +68,12 @@ foreach ($homeworkDirs as $homeworkDir) {
 		<div id="collapse<?php echo $i; ?>" class="collapse" aria-labelledby="heading<?php echo $i; ?>" data-parent="#accordionExample">
 			<div class="card-body">
 				<?php
-				$myfile = fopen("data/rezults/" . $homeworkType . "/" . $_GET['username'] . "/" . $homeworkDir . "/rezult.txt", "r");
-				$contents = fread($myfile, filesize("data/rezults/" . $homeworkType . "/" . $_GET['username'] . "/" . $homeworkDir . "/rezult.txt"));
-				echo "<xmp>" . $contents . "</xmp>";
-				fclose($myfile);
+				$myfile = "data/rezults/" . $homeworkType . "/" . $username . "/" . $homeworkDir . "/rezult.txt";
+				if(file_exists($myfile)) {
+					$contents = file_get_contents($myfile);
+					echo "<xmp>" . $contents . "</xmp>";
+				} else 
+					echo "<xmp>Results not yet ready!</xmp>";
 				?>
 			</div>
 		</div>
