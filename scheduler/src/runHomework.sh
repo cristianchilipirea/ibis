@@ -19,8 +19,8 @@ port=$(echo $fullMachineName | cut -f 2 -d "-")
 
 fullSubmissionPath="$queuePath/$fullMachineName/$submissionName"
 fileDebug="$rezultsPath/$submissionType/$userName/$timeStamp/debug.txt"
-sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p $port $ssh_user@$machine"
-scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P $port"
+sshCmd="ssh -i $keyFile -o StrictHostKeyChecking=no -q -p $port $ssh_user@$machine"
+scpCmd="scp -i $keyFile -o StrictHostKeyChecking=no -q -P $port"
 
 mkdir -p $rezultsPath/$submissionType/$userName/$timeStamp
 echo "" > $fileDebug
@@ -33,8 +33,8 @@ $scpCmd $fullSubmissionPath $ssh_user@$machine:$submissionName/$submissionName >
 $sshCmd "unzip -o $submissionName/$submissionName -d $submissionName" >> $fileDebug 2>&1
 
 #upload checker
-$scpCmd $submissionCheckersPath/$submissionType.zip $ssh_user@$machine:$submissionName/$submissionType.zip >> $fileDebug 2>&1
-$sshCmd "unzip -o $submissionName/$submissionType.zip -d $submissionName" >> $fileDebug 2>&1
+$scpCmd $submissionCheckersPath/$submissionType/active/checker.zip $ssh_user@$machine:$submissionName/checker.zip >> $fileDebug 2>&1
+$sshCmd "unzip -o $submissionName/checker.zip -d $submissionName" >> $fileDebug 2>&1
 
 #run
 $sshCmd "cd $submissionName; chmod 777 runAll.sh" >> $fileDebug 2>&1

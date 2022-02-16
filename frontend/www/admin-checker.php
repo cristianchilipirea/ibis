@@ -76,11 +76,12 @@ if (isset($_POST['generateRunner']) && $_POST['generateRunner']) {
 }
 
 if (isset($_POST['generateZips']) && $_POST['generateZips']) {
-	exec("rm " . $checkerPath . ".zip");
-	exec("rm " . $checkerPath . "-solution.zip");
-	exec("cd $checkerPath/checker && zip -r ../../" . $checker . ".zip .");
-	exec("cd $checkerPath/solution && zip -r ../../" . $checker . "-solution.zip .");
-	copy("data/checkers/$checker-solution.zip", "data/uploads/$checker#admin@" . time() . "#.zip");
+	@mkdir( $checkerPath . "/active", 0700, true);
+	exec("rm " . $checkerPath . "/active/checker.zip");
+	exec("rm " . $checkerPath . "/active/solution.zip");
+	exec("cd $checkerPath/checker && zip -r ../active/checker.zip .");
+	exec("cd $checkerPath/solution && zip -r ../active/solution.zip .");
+	copy("data/checkers/$checker/active/solution.zip", "data/uploads/$checker#admin@" . time() . "#.zip");
 }
 ?>
 

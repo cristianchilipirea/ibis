@@ -1,14 +1,8 @@
 <?php
 include 'authorization.php';
 
-if(!hasAccess($_POST['key'], $_POST['timestamp'], $_POST['username']))
-{
-	echo "NO ACESSS. You need to login again or refresh the page before you try to submit again.";
-	exit();
-}
-
-//echo "UPLOAD PERIOD ENDED";
-//exit();
+if(!isAuthenticated())
+	exit("NO ACESSS. You need to login again or refresh the page before you try to submit again.");
 
 function getHomeworkType($username, $time) {
 	$homeworkTypes = array(
