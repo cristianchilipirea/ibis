@@ -43,7 +43,7 @@ if($imageFileType != "zip")
 if (!move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
 	exit("Sorry, there was an error uploading your file.");
 
-$urlpath = 'main.php?task='.$homeworkType.'&username='.$username.'&key='.$_GET['key'].'&timestamp='.$_GET['timestamp'];
+$urlpath = 'main.php?task='.$homeworkType.'&username='.$username.'&key='.$_POST['key'].'&timestamp='.$_POST['timestamp'];
 header('Location: '.$urlpath);
 echo "Go to: https://ibis.chilipirea.ro/".$urlpath;
 ?>

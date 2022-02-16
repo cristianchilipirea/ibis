@@ -5,10 +5,13 @@ if(!isAuthenticated())
 if(!isset($_GET['task']))
 	exit("You need to add task to GET request");
 
-function getTimestamp() {
-	if(isset($_GET['timestamp']))
-		return $_GET['timestamp'];
-	return time();
+function getSafe($key) {
+	if(isset($_GET[$key]))
+		return $_GET[$key];
+	if($key=='timestamp')
+		return time();
+	else
+		return 1;
 }
 ?>
 <html>
@@ -29,8 +32,11 @@ function getTimestamp() {
 		<br>
 		You may need to refresh to see results.
 		<div style="display: flex;">
-			<form id="submissionForm" class="form-inline" action="upload.php?key=<?php echo $_GET['key']; ?>&username=<?php echo getUsername(); ?>&timestamp=<?php echo $_GET['timestamp']; ?>" method="post" enctype="multipart/form-data">
+			<form id="submissionForm" class="form-inline" action="upload.php" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="task" value="<?php echo $_GET['task']; ?>">
+				<input type="hidden" name="key" value="<?php echo getSafe('key'); ?>">
+				<input type="hidden" name="username" value="<?php echo getUsername(); ?>">
+				<input type="hidden" name="timestamp" value="<?php echo getSafe('timestamp'); ?>">
 
 				<div class="form-group">
 					<label for="submitHomework">Submite tema:</label>
