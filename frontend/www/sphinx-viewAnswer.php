@@ -65,7 +65,7 @@
 					<div style="border:solid; margin-top:10px; margin-left:10px; font-size: 30px;">
 						<pre class="prettyprint" style="margin-bottom: 0; display:ruby; border: none;">
 			<?php
-					echo file_get_contents("data/sphinx/" . $questionNumber . "/" . $file);
+					echo $file.":".file_get_contents("data/sphinx/" . $questionNumber . "/" . $file);
 			?>
 			</pre>
 					</div>
