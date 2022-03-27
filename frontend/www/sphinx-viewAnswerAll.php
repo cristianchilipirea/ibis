@@ -1,45 +1,60 @@
-<html>
+<?php
+$answers = array();
+$students = array();
+$an = 3;
+if(isset($_GET["an"]))
+        $an = $_GET["an"];
+$handle = fopen("data/an".$an.".csv","r");
+while ( ($data = fgetcsv($handle) ) !== FALSE ) {
+        //echo $data[3];
+        $students[] = $data[3];
+        $studentGroups[$data[3]] = $data[2];
+        $answers[$data[3]] = array();
+}
+$folders = scandir("data/sphinx/");
+$folders = array_diff($folders,array(".","..","currentQuestion","currentQuestionText","currentQuestionType"));
+//print_r($folders);
+echo "Student,Group,NumAnswers";
+foreach($folders as $folder) {
+        $answerFiles = scandir("data/sphinx/".$folder);
+        $answerFiles = array_diff($answerFiles, array(".",".."));
+        $answerFiles = array_intersect($answerFiles, $students);
+        $numAnswers[$folder] = count($answerFiles);
+        foreach($answerFiles as $answerFile) {
+                $answers[$answerFile][$folder] = file_get_contents("data/sphinx/".$folder."/".$answerFile);
+        }
+        if(empty($answerFiles))
+                $removeFolders[] = $folder;
+}
 
-<head>
-	<title>
-		Curs AP Răspunsuri
-	</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-	<link rel="stylesheet" href="css/sphinx.css">
-	<script src="js/sphinx.js"></script>
-	<script>
-		$(function() {
-			$('#question').textfill({
-				maxFontPixels: 500
-			});
-		});
+$folders = array_diff($folders, $removeFolders);
+sort($students);
+sort($folders,SORT_NUMERIC);
+foreach($folders as $folder) {
+        echo ",\"".$folder."\"";
+}
+echo "\n";
+echo "-,-,-";
+foreach($folders as $folder) {
+        echo ",\"".$numAnswers[$folder]."\"";
+}
+echo "\n";
+echo "-,-,-";
+foreach($folders as $folder) {
+        echo ",\"".file_get_contents("data/sphinx/".$folder."/questionText")."\"";
+}
+echo "\n";
 
-		function showAll() {
-			$('#main').css("visibility", "visible");
-		}
-	</script>
-</head>
-
-<body style="background-color:#fff;">
-	<div id="all">
-		<div id="controller">
-			<a href="">REFRESH</a>
-		</div>
-
-		<div>
-		<?php
-		$answers = array();
-		$handle = fopen("data/an3.csv");
-		while ( ($data = fgetcsv($handle) ) !== FALSE ) {
-			echo $data[3];
-			$answers[$data[3]] = "sasa";
-		}
-		print_r($answers);
-		?>
-		</div>
-
-	</div>
-</body>
+foreach($students as $student) {
+        echo $student.",".$studentGroups[$student].",";
+        echo count($answers[$student]);
+        foreach($folders as $folder) {
+                if(isset($answers[$student][$folder]))
+                        echo ",\"".$answers[$student][$folder]."\"";
+                else
+                        echo ",";
+        }
+        echo "\n";
+}
+//print_r($answers);
+?>
